@@ -1,16 +1,5 @@
 [ 2021-01-28 21:41:02 config.cpp 15  ing load my.conf
 [ 2021-01-28 21:41:02 config.cpp 50 my.conf load sucess
- [MySQL] 
-0.0.0.0
-3306
-root
-266448
-blog_system
- [Network]
-0.0.0.0
-19999
- [WWW] 
-/www/wwwroot/blog
 blog_system
 [ 2021-01-28 21:41:02 /home/duchlong/learn/blog/include/serverFunction.h 34 ing conncet mysql and init table
 [ 2021-01-28 21:41:02 /home/duchlong/learn/blog/include/serverFunction.h 17 mysql fd reboot 
