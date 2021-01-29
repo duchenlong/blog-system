@@ -1,0 +1,297 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial;
+    padding: 10px;
+    background: #f1f1f1;
+}
+
+.app {
+    margin: 0 auto;
+    width: 1300px;
+    height: 500px;
+}
+
+
+/* 导航条 */
+
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+    clear: both;
+    margin: 0 auto;
+    width: 1300px;
+    height: 50px;
+}
+
+
+/* 导航链接 */
+
+.topnav a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.topnav #blog_write {
+    float: right;
+    margin: auto auto;
+}
+
+
+/* 链接 - 修改颜色 */
+
+.topnav a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+
+/* 创建三个相等的列 */
+
+.blog_text {
+    width: 75%;
+    float: left;
+}
+
+
+/* 列后清除浮动 */
+
+.row:after {
+    margin: 25px 200px;
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.blog_text .column {
+    border-bottom-style: solid;
+    border-color: #0000ff;
+    border-width: 1px;
+    width: 80%;
+    margin: 5px 10px;
+}
+
+button {
+    margin: auto 5px;
+    background-color: red;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: burlywood;
+    color: black;
+}
+
+
+/* .blog_text .column p {} */
+
+.blog_text h2 {
+    text-shadow: 5px 5px 5px blanchedalmond;
+}
+
+.areas {
+    width: 100%;
+    float: right;
+    display: flex;
+    margin: 5px auto;
+}
+
+.blog_text .column:hover {
+    background-color: grey;
+    color: black;
+}
+
+.blog_text .edit-button {
+    width: 20%;
+    float: right;
+}
+
+.blog_text .edit-button button {
+    margin: 5px 10px;
+}
+
+.blog_text button {
+    margin: auto 5px;
+    float: right;
+    background-color: #4CAF50;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.blog_text button:hover {
+    background-color: burlywood;
+    color: black;
+}
+
+.blog_info {
+    width: 25%;
+    float: right;
+    border: 0 auto;
+}
+
+.blog_info h2 {
+    text-shadow: 5px 5px 5px blanchedalmond;
+    text-align: center;
+}
+
+.blog_info .auther_img {
+    width: 300px;
+    height: 300px;
+    margin: auto 15px;
+}
+
+.blog_info .auther {
+    outline-style: solid;
+    outline-color: black;
+    outline-width: 1px;
+}
+
+.blog_info .auther div {
+    text-align: left;
+    margin: auto auto;
+    width: 80%;
+    height: auto !important;
+    height: 100px;
+    min-height: 100px;
+}
+
+.blog_info .tags_list li {
+    text-align: center;
+    margin: 5px auto;
+    list-style: none;
+}
+
+.blog_info .tags_list li a {
+    display: block;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    cursor: default;
+}
+
+.blog_info .tags_list li a:hover {
+    background-color: gray;
+    color: green;
+}
+
+.show-blog {
+    width: 75%;
+    float: left;
+}
+
+.show-blog li {
+    text-align: center;
+    margin: 5px auto;
+    list-style: none;
+}
+
+.edit_blog li {
+    text-align: center;
+    margin: 5px 10px;
+    list-style: none;
+}
+
+.show-blog button {
+    margin: auto 5px;
+    background-color: red;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.show-blog button:hover {
+    background-color: green;
+    color: black;
+}
+
+
+/* 底部样式 */
+
+.footer {
+    font-size: 20px;
+    color: blanchedalmond;
+    padding: 10px;
+    text-align: center;
+    overflow: hidden;
+    background-color: #333;
+    clear: both;
+    margin: 0 auto;
+    width: 1300px;
+}
+
+.add-blog-1 {
+    width: 1300px;
+    height: 150px;
+}
+
+.add-blog-1 .text-blog-tag {
+    float: left;
+}
+
+.add-tags-blog {
+    background-color: #ddd;
+    width: 70%;
+    height: 100px;
+    overflow: auto;
+    float: left;
+    margin: auto 25px;
+}
+
+.a-tag-blog {
+    float: left;
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.a-tag-blog:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.add-blog-2 {
+    width: 1300px;
+    height: 150px;
+}
+
+.add-blog-2 .title {
+    float: left;
+}
+
+.add-blog-2 .add-title-blog {
+    background-color: #ddd;
+    float: left;
+    margin: 25px 25px;
+    width: 70%;
+}
+
+.add-blog-2 .add-title-blog input {
+    width: 85%;
+    height: 30px;
+}

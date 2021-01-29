@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <html manifest="demo.appcache">
+
+
+    </html>
+    <title>blog_system</title>
+    <link rel="Shortcut icon" href="./img/fnc.jpg" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" href="editor/css/editormd.min.css" />
+    <link rel="stylesheet" href="editor/css/editormd.preview.css" />
+    <!-- <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" /> -->
+    
+
+    <style>
+        .editormd-html-preview {
+            width: 90%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="oper">
+        <!-- 导航栏 begin -->
+        <nav>
+            <div class="topnav">
+                <a href="/">博客首页</a>
+                <a href="#tags-list">博客标签</a>
+                <a href="/admin.html">博客管理</a>
+                <a href="/index.html">我的博客</a>
+                <a href="#author-info">关于作者</a>
+                <button id="blog_write">
+                    <span v-on:click="add_blog()" onclick="tab_event()">写博客</span>
+                </button>
+            </div>
+            <hr>
+        </nav>
+        <!-- 导航栏 end -->
+
+        <!-- 内容区域 begin -->
+        <div class="app">
+            <div class="blog_text" v-show="status==='index_blog'" v-cloak>
+                <article class="column" v-for="blog in blogs" v-on:click="show_blog(blog.id)" v-cloak>
+                    <div>
+                        <h2 class="blog_title">{{blog.title}}</h2>
+                    </div>
+                    <p>
+                        tags {{get_tagname_id(blog.tag_id)}} author @{{get_username_id(blog.user_id)}}
+                    </p>
+                    <span>{{blog.ctime}}</span>
+                </article>
+            </div>
+            
+            <!-- 关于作者 标签列表 begin -->
+            <div class="blog_info" v-show="status!='submit_blog'">
+                <div class="auther" id="author-info" v-cloak>
+                    <h2>关于作者</h2>
+                    <img src="img/headp.png" alt="about me" class="auther_img">
+                    <div class="author-info">
+                        <p>&nbsp;&nbsp;name: @dcl</p>
+                        <p>&nbsp;&nbsp;recommend: 我不想成为一个庸俗的人。</p>
+                    </div>
+                </div>
+
+                <div class="tags_list" id="tags-list">
+                    <h2><span>博客标签列表</span></h2>
+                    <ul>
+                        <li>
+                            <a v-for="tag in tags" v-on:click="show_tagblog(tag.id)" v-cloak>{{tag.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 关于作者 标签列表 end -->
+
+            <!-- 博客展示 begin -->
+            <div v-show="status==='show_blog'" class="show-blog" v-cloak>
+                <ul>
+                    <li>
+                        <button v-on:click="main_page()">
+                    返回主页
+                </button>
+                    </li>
+
+                    <li>
+                        <article id="test-editormd-view" v-cloak>
+                            <textarea name="test-editormd-markdown-doc" v-model="sblog.content">
+                            </textarea>
+                        </article>
+                    </li>
+                </ul>
+            </div>
+            <!-- 博客展示 begin -->
+
+
+            <!-- 新增博客 begin -->
+            <div id="add-blog-3" v-show="status==='submit_blog'" v-cloak>
+                <div class="add-blog-1">
+                    <div class="text-blog-tag">
+                        <h2>博客标签</h2>
+                    </div>
+
+                    <div class="add-tags-blog" id="tabs-blog">
+                        <div class="a-tag-blog" v-for="tag in tags" v-cloak>
+                            <input type="checkbox" name="tagname">
+                            <span>{{tag.name}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="add-blog-2">
+                    <div class="title">
+                        <h2>博客标题</h2>
+                    </div>
+                    <div class="add-title-blog" id="add-title">
+                        <input type="text" name="blogtitle" maxlength="200">
+                        <span>(200字以内)</span>
+                    </div>
+
+                </div>
+                <hr>
+
+                <div class="edit_blog" v-cloak>
+                    <div id="test-editormd">
+                        <textarea style="display: none;" name="test-editormd-markdown-doc">
+                    </textarea>
+                    </div>
+                    <hr>
+                    <button v-on:click="submit_blog()" v-cloak>
+                提交博客
+            </button>
+
+                    <button v-on:click="main_page()" v-cloak>
+                返回主界面
+            </button>
+                </div>
+            </div>
+            <!-- 新增博客 end -->
+
+        </div>
+        <!-- 内容区域 end -->
+    </div>
+
+
+    <div class="footer">
+        <p>© dcl blog_system</p>
+    </div>
+    <script type="text/javascript" src="js/index.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="editor/lib/marked.min.js"></script>
+    <script src="editor/lib/prettify.min.js"></script>
+    <script src="editor/lib/raphael.min.js"></script>
+    <script src="editor/lib/underscore.min.js"></script>
+    <script src="editor/lib/sequence-diagram.min.js"></script>
+    <script src="editor/lib/flowchart.min.js"></script>
+    <script src="editor/lib/jquery.flowchart.min.js"></script>
+    <script src="editor/editormd.js"></script>
+
+    <script>
+        var oper = new Vue({
+            el: '#oper',
+            data: {
+                author: {
+                    id: 1,
+                    name: null,
+                },
+                blogs: [],
+                users: [],
+                tags: [],
+                sblog: {
+                    id: null,
+                    user_id: null,
+                    tag_id: null,
+                    title: null,
+                    content: null
+                },
+                status: "index_blog",
+            },
+            methods: {
+                get_allblogs: function() { //获取所有博客信息
+                    $.ajax({
+                        url: "/blog",
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            this.blogs = result;
+                        }
+                    })
+                },
+                get_allusers: function() { //获取所有用户信息
+                    $.ajax({
+                        url: "/user",
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            this.users = result;
+                            this.get_allblogs();
+                        }
+                    })
+                },
+                get_alltags: function() { //获取所有标签信息
+                    $.ajax({
+                        url: "/tag",
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            this.tags = result;
+                            this.get_allusers();
+                        }
+                    })
+                },
+                get_username_id: function(id) { //根据博客id获得用户姓名
+                    for (var i = 0; i < this.users.length; i++) {
+                        if (this.users[i].id == id) {
+                            return this.users[i].name;
+                        }
+                    }
+                },
+                get_tagname_id: function(id) { //根据博客Id获取标签名
+                    for (var i = 0; i < this.tags.length; i++) {
+                        if (this.tags[i].id == id) {
+                            return this.tags[i].name;
+                        }
+                    }
+                },
+                show_blog: function(blog_id) {
+                    $.ajax({
+                        url: "/blog/" + blog_id,
+                        type: "get",
+                        context: this,
+                        success: function(data, status) {
+                            this.status = "show_blog";
+                            this.sblog = data[0];
+                            $('#test-editormd-view').empty();
+                            testEditormdView = editormd.markdownToHTML("test-editormd-view", {
+                                markdown: this.sblog.content, //+ "\r\n" + $("#append-test").text(),
+                                //htmlDecode      : true,       // 开启 HTML 标签解析，为了安全性，默认不开启
+                                htmlDecode: "style,script,iframe", // you can filter tags decode
+                                //toc             : false,
+                                tocm: true, // Using [TOCM]
+                                //tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
+                                //gfm             : false,
+                                //tocDropdown     : true,
+                                // markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+                                emoji: true,
+                                taskList: true,
+                                tex: true, // 默认不解析
+                                flowChart: true, // 默认不解析
+                                sequenceDiagram: true, // 默认不解析
+                            });
+                            //console.log("返回一个 jQuery 实例 =>", testEditormdView);
+
+                            // 获取Markdown源码
+                            //console.log(testEditormdView.getMarkdown());
+
+                            //alert(testEditormdView.getMarkdown()); 
+                        }
+                    })
+                },
+                show_tagblog : function(tag_id) {
+                    $.ajax({
+                        url: "/blog?tag_id=" + tag_id.toString(),
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            if(result.length == 0 || status >= 300) {
+                                alert("该标签当前没有博客");
+                                return ;
+                            }
+                            this.blogs = result;
+                        }
+                    })
+                },
+                add_blog: function() { //增加博客
+                    this.status = "submit_blog";
+                    console.log(oper.status);
+                    $('#test-editormd').empty();
+                    testEditor = editormd("test-editormd", {
+                        width: "100%",
+                        height: 700,
+                        path: "editor/lib/",
+                        appendMarkdown: "",
+                        saveHTMLToTextarea: true
+                    })
+
+                },
+                submit_blog: function() { //提交博客
+                    var tag_id = Get_tag_idx();
+                    var title = Get_blog_title();
+                    if (tag_id === -1) {
+                        alert("请选择所属博客标签");
+                        return;
+                    }
+
+                    if (title === "") {
+                        alert("请设置博客标题");
+                        return;
+                    }
+                    tag_id = this.tags[tag_id].id;
+                    var content = testEditor.getMarkdown();
+                    if (content === "") {
+                        alert("博客内容不能为空");
+                        return;
+                    }
+                    var body = {
+                        title: title,
+                        content: content,
+                        tag_id: tag_id,
+                        user_id: this.author.id,
+                    };
+
+                    $.ajax({
+                        url: "/blog",
+                        type: "post",
+                        context: this,
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify(body),
+                        success: function(data, status) {
+                            this.sblog = {
+                                id: null,
+                                user_id: null,
+                                tag_id: null,
+                                title: null,
+                                content: null
+                            };
+                            this.status = "index_blog";
+                            this.get_allblogs();
+                        }
+                    })
+                },
+                main_page: function() { //返回主页
+                    var tag_id = Get_tag_idx();
+                    var title = Get_blog_title();
+                    if (this.status === "submit_blog" && (tag_id != -1 || title != "" || testEditor.getMarkdown() != "")) {
+                        var r = confirm("是否提交新的博客");
+                        if (r == true) {
+                            this.submit_blog();
+                            return;
+                        }
+                    }
+                    this.sblog = {
+                        id: null,
+                        user_id: null,
+                        tag_id: null,
+                        title: null,
+                        content: null
+                    };
+                    this.status = "index_blog";
+                    this.get_allblogs();
+                },
+            }
+        });
+        oper.get_alltags();
+    </script>
+
+
+
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</body>
+
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <html manifest="demo.appcache">
+
+    </html>
+    <title>blog_system</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" href="editor/css/editormd.preview.css" />
+    <link rel="stylesheet" href="editor/css/editormd.css" />
+    <link rel="shortcut icon" href="https://pandao.github.io/editor.md/favicon.ico" type="image/x-icon" />
+    <style>
+        .editormd-html-preview {
+            width: 90%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 导航栏 begin -->
+    <nav>
+        <div class="topnav">
+            <a href="/index.html">博客首页</a>
+            <a href="#tags-list">博客标签</a>
+            <a href="/admin.html">博客管理</a>
+            <a href="#">我的博客</a>
+            <a href="#author-info">关于作者</a>
+
+        </div>
+        <hr>
+    </nav>
+    <!-- 导航栏 end -->
+
+    <!-- 内容区域 begin -->
+    <div class="app" id="oper">
+        <div class="blog_text" v-show="status==='index_blog'" v-cloak>
+            <div class="areas" v-for="blog in blogs">
+                <div class="column" v-on:click="show_blog(blog.id)">
+                    <div>
+                        <h2 class="blog_title">{{blog.title}}</h2>
+                    </div>
+                    <p>
+                        tags {{get_tagname_id(blog.tag_id)}} author @{{get_username_id(blog.user_id)}}
+                    </p>
+                    <span>{{blog.ctime}}</span>
+                </div>
+
+                <div class="edit-button">
+                    <button type="button" v-on:click="edit_blog(blog.id)">
+                        编辑博客
+                    </button>
+
+                    <button type="button" v-on:click="delete_blog(blog.id)">
+                        删除博客
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="blog_info" v-show="status!='editor_blog'" v-cloak>
+            <div class="auther" id="author-info">
+                <h2>关于作者</h2>
+                <img src="img/headp.png" alt="about me" class="auther_img">
+                <div class="author-info">
+                    <p>&nbsp;&nbsp;name: @dcl</p>
+                    <p>&nbsp;&nbsp;recommend: 我不想成为一个庸俗的人。</p>
+                </div>
+            </div>
+
+            <div class="tags_list" id="tags-list">
+                <h2><span>博客标签列表</span></h2>
+                <ul>
+                    <li>
+                        <a href="" v-for="tag in tags">{{tag.name}}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div v-show="status==='show_blog'" class="show-blog" v-cloak>
+            <ul>
+                <li>
+                    <button v-on:click="main_page()">
+                        返回主页
+                    </button>
+                </li>
+
+                <li>
+                    <article id="test-editormd-view">
+                        <textarea name="test-editormd-markdown-doc" v-model="sblog.content">
+                        </textarea>
+                    </article>
+                </li>
+            </ul>
+        </div>
+
+        <div v-show="status==='editor_blog'" class="edit_blog" v-cloak>
+            <div id="test-editormd">
+                <textarea style="display: none;" name="test-editormd-markdown-doc" v-model="sblog.content">
+                    </textarea>
+            </div>
+
+            <button v-on:click="update_blog()" v-cloak>
+                保存
+            </button>
+
+            <button v-on:click="main_page()" v-cloak>
+                返回主界面
+            </button>
+        </div>
+
+    </div>
+    <!-- 内容区域 end -->
+
+    <!-- 结尾 begin -->
+    <div class="footer">
+        <p>© dcl blog_system</p>
+    </div>
+    <!-- 结尾 end  -->
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+    <script src="editor/lib/marked.min.js"></script>
+    <script src="editor/lib/prettify.min.js"></script>
+    <script src="editor/lib/raphael.min.js"></script>
+    <script src="editor/lib/underscore.min.js"></script>
+    <script src="editor/lib/sequence-diagram.min.js"></script>
+    <script src="editor/lib/flowchart.min.js"></script>
+    <script src="editor/lib/jquery.flowchart.min.js"></script>
+    <script src="editor/editormd.js"></script>
+    <script src="editor/editormd.min.js"></script>
+
+    <script>
+        var oper = new Vue({
+            el: '#oper',
+            data: {
+                author: "dcl",
+                blogs: [],
+                users: [],
+                tags: [],
+                sblog: {
+                    id: null,
+                    user_id: null,
+                    tag_id: null,
+                    title: null,
+                    content: null
+                },
+                status: "index_blog"
+            },
+            methods: {
+                get_allblogs: function() { //获取所有博客信息
+                    $.ajax({
+                        url: "/blog",
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            this.blogs = result;
+                        }
+                    })
+                },
+                get_allusers: function() { //获取所有用户信息
+                    $.ajax({
+                        url: "/user",
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            this.users = result;
+                            this.get_allblogs();
+                        }
+                    })
+                },
+                get_alltags: function() { //获取所有标签信息
+                    $.ajax({
+                        url: "/tag",
+                        type: "get",
+                        context: this,
+                        success: function(result, status) {
+                            this.tags = result;
+                            this.get_allusers();
+                        }
+                    })
+                },
+                get_username_id: function(id) { //根据博客id获得用户姓名
+                    for (var i = 0; i < this.users.length; i++) {
+                        if (this.users[i].id == id) {
+                            return this.users[i].name;
+                        }
+                    }
+                },
+                get_tagname_id: function(id) { //根据博客Id获取标签民
+                    for (var i = 0; i < this.tags.length; i++) {
+                        if (this.tags[i].id == id) {
+                            return this.tags[i].name;
+                        }
+                    }
+                },
+                show_blog: function(blog_id) {
+                    $.ajax({
+                        url: "/blog/" + blog_id,
+                        type: "get",
+                        context: this,
+                        success: function(data, status) {
+                            this.sblog = data;
+                            $('#test-editormd-view').empty();
+                            testEditormdView = editormd.markdownToHTML("test-editormd-view", {
+                                markdown: this.sblog.content, //+ "\r\n" + $("#append-test").text(),
+                                //htmlDecode      : true,       // 开启 HTML 标签解析，为了安全性，默认不开启
+                                htmlDecode: "style,script,iframe", // you can filter tags decode
+                                //toc             : false,
+                                tocm: true, // Using [TOCM]
+                                //tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
+                                //gfm             : false,
+                                //tocDropdown     : true,
+                                // markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
+                                emoji: true,
+                                taskList: true,
+                                tex: true, // 默认不解析
+                                flowChart: true, // 默认不解析
+                                sequenceDiagram: true, // 默认不解析
+                            });
+                            //console.log("返回一个 jQuery 实例 =>", testEditormdView);
+
+                            // 获取Markdown源码
+                            //console.log(testEditormdView.getMarkdown());
+
+                            //alert(testEditormdView.getMarkdown()); 
+                            this.status = "show_blog";
+                        }
+                    })
+                },
+                edit_blog: function(blog_id) { //编辑博客
+                    $.ajax({
+                        url: "/blog/" + blog_id,
+                        type: "get",
+                        context: this,
+                        success: function(data, status) {
+                            this.status = "editor_blog";
+                            this.sblog = data;
+                            testEditor = editormd("test-editormd", {
+                                width: "100%",
+                                height: 700,
+                                path: "editor/lib/",
+                                appendMarkdown: this.sblog.content,
+                                saveHTMLToTextarea: true
+                            });
+
+                        }
+                    })
+                },
+                update_blog: function() { //更新博客
+                    var content = testEditor.getMarkdown();
+                    var body = {
+                        title: this.sblog.title,
+                        content: content,
+                        tag_id: this.sblog.tag_id,
+                        user_id: this.sblog.user_id,
+                    };
+                    $.ajax({
+                        url: "/blog/" + this.sblog.id,
+                        type: "put",
+                        context: this,
+                        contentType: "application/json;charset=utf-8",
+                        data: JSON.stringify(body),
+                        success: function(data, status) {
+                            this.sblog = {
+                                id: null,
+                                user_id: null,
+                                tag_id: null,
+                                title: null,
+                                content: null
+                            };
+                            this.status = "index_blog";
+                            this.get_allblogs();
+                        }
+                    })
+                },
+                main_page: function() { //返回主页
+                    if (this.status === "editor_blog") {
+                        var r = confirm("是否保存博客修改");
+                        if (r == true) {
+                            this.update_blog();
+                            return;
+                        }
+                    }
+                    this.sblog = {
+                        id: null,
+                        user_id: null,
+                        tag_id: null,
+                        title: null,
+                        content: null
+                    };
+                    this.status = "index_blog";
+                    this.get_allblogs();
+                },
+                delete_blog: function(blog_id) { //删除博客
+                    var r = confirm("是否删除博客");
+                    if (r == true) {
+                        $.ajax({
+                            url: "/blog/" + blog_id,
+                            type: "delete",
+                            context: this,
+                            success: function(result, status) {
+                                this.get_allblogs();
+                            }
+                        })
+                    }
+                },
+            }
+        });
+        oper.get_alltags();
+    </script>
+
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</body>
+
+</html>
